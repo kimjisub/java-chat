@@ -1,13 +1,19 @@
 package Server;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import Protocol.ChatServerInterface;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatServer {
-	private ServerSocket serverSocket;
-	private List<ClientHandler> clients;
-	private List<String> chatLog; // 채팅 로그를 저장하는 리스트
+	private final ServerSocket serverSocket;
+	private final List<ClientHandler> clients;
+	private final List<String> chatLog;
+
+	private int nextUserId = 0;
 
 	public ChatServer(int port) throws IOException {
 		clients = new ArrayList<>();
@@ -18,14 +24,15 @@ public class ChatServer {
 	public void start() throws IOException {
 		while (true) {
 			Socket socket = serverSocket.accept();
-			ClientHandler clientHandler = new ClientHandler(socket, this);
+			ClientHandler clientHandler = new ClientHandler(socket, this, nextUserId++);
 			clients.add(clientHandler);
 			clientHandler.start();
 		}
 	}
 
 	public synchronized void broadcastMessage(String message) {
-		chatLog.add(message); // 채팅 로그에 메시지 추가
+		chatLog.add(message);
+
 		System.out.println(message);
 		for (ClientHandler client : clients) {
 			client.sendMessage(message);
@@ -37,24 +44,46 @@ public class ChatServer {
 	}
 
 	public static class ClientHandler extends Thread {
-		private Socket socket;
-		private ChatServer server;
-		private PrintWriter out;
+		private final Socket socket;
+		private final ChatServer server;
+		private final int userId;
 
-		public ClientHandler(Socket socket, ChatServer server) {
+		private final ChatServerInterface chatServerInterface;
+
+		public ClientHandler(Socket socket, ChatServer server, int userId) throws IOException {
 			this.socket = socket;
 			this.server = server;
+			this.userId = userId;
+			this.chatServerInterface = new ChatServerInterface(socket.getInputStream(), socket.getOutputStream());
+			chatServerInterface.setClientHandler(new ChatServerInterface.ClientHandler() {
+				@Override
+				public void onMessageReceived(String message) {
+					server.broadcastMessage(message); // 메시지를 모든 클라이언트에게 전송
+				}
+
+				@Override
+				public void onMessageEditRequest(int messageId, String newMessage) {
+
+				}
+
+				@Override
+				public void onMessageDeleteRequest(int messageId) {
+
+				}
+
+				@Override
+				public void onInvalidRequest(String[] messages) {
+
+				}
+
+				// 다른 이벤트 핸들러 구현 (메시지 수정, 삭제 등)
+			});
 		}
 
 		public void run() {
 			try {
-				BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				out = new PrintWriter(socket.getOutputStream(), true);
-
-				// 클라이언트로부터 메시지를 받아 처리
-				String message;
-				while ((message = in.readLine()) != null) {
-					server.broadcastMessage(message);
+				while (!socket.isClosed()) {
+					chatServerInterface.readCommand(); // 클라이언트로부터 명령을 읽고 처리
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -72,7 +101,11 @@ public class ChatServer {
 		}
 
 		public void sendMessage(String message) {
-			out.println(message);
+			try {
+				chatServerInterface.sendMessageToClient(server.getChatLog().size() - 1, userId, message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

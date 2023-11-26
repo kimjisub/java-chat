@@ -1,5 +1,7 @@
 package Client;
 
+import Protocol.ChatClientInterface;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -61,17 +63,16 @@ public class Main extends JFrame {
 
 	private static ChatClient client;
 
-	public static void main(String[] args) {
-		frame_chat();
-		if (true)
-			return;
 
+	public static void main(String[] args) {
+//		frame_chat();
+//		if (true)
+//			return;
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 			System.out.print("Enter server address ('host:port'): ");
 			String input = reader.readLine();
 
-			// 클라이언트 모드
 			String[] parts = input.split(":");
 			if (parts.length != 2) {
 				System.out.println("Invalid input format. Please use 'host:port'.");
@@ -80,10 +81,34 @@ public class Main extends JFrame {
 			String host = parts[0];
 			int port = Integer.parseInt(parts[1]);
 
-			client = new ChatClient(host, port);
-			client.setOnNewMessage((sender, message) -> {
-				System.out.println(sender + ": " + message);
-			});
+			ChatClientInterface.MessageHandler messageHandler = new ChatClientInterface.MessageHandler() {
+				@Override
+				public void onMessageNew(int messageId, int userId, String message) {
+					System.out.println("New Message from " + userId + ": " + message);
+				}
+
+				@Override
+				public void onMessageEdit(int messageId, String newMessage) {
+					// 메시지 수정 처리
+				}
+
+				@Override
+				public void onMessageDelete(int messageId) {
+					// 메시지 삭제 처리
+				}
+
+				@Override
+				public void onUnknown(String[] messages) {
+					// 알 수 없는 메시지 처리
+				}
+
+				@Override
+				public void onProtocolError() {
+					System.err.println("Protocol Error");
+				}
+			};
+
+			client = new ChatClient(host, port, messageHandler);
 			client.start();
 
 			System.out.println("Connected to the server. Type 'exit' to quit.");
@@ -91,6 +116,8 @@ public class Main extends JFrame {
 			while (!(message = reader.readLine()).equalsIgnoreCase("exit")) {
 				client.sendMessage(message);
 			}
+
+			client.interrupt();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

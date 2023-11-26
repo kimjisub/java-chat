@@ -2,51 +2,51 @@ package Client;
 
 import Protocol.ChatClientInterface;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.io.IOException;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatClient extends Thread {
-	private final Socket socket;
-	private final ChatClientInterface chatClientInterface;
-	private List<String> chatLog;
+	private final String host;
+	private final int port;
 
-	public void setOnNewMessage(BiConsumer<String, String> callback) {
-		chatClientInterface.setOnNewMessage(callback);
-	}
+	private ChatClientInterface chatInterface;
+	private final ChatClientInterface.MessageHandler messageHandler;
 
 
+	// 서버로 메시지를 보내기 위한 스레드 풀
+	private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-	public ChatClient(String host, int port) throws IOException {
-		socket = new Socket(host, port);
-		chatClientInterface = new ChatClientInterface(socket.getInputStream(), socket.getOutputStream());
 
-		chatClientInterface.setOnNewMessage((sender, message) -> {
-			chatLog.add(sender + ": " + message);
-			System.out.println(sender + ": " + message);
-		});
-		chatLog = new ArrayList<>();
+	public ChatClient(String host, int port, ChatClientInterface.MessageHandler messageHandler) {
+		this.host = host;
+		this.port = port;
+		this.messageHandler = messageHandler;
 	}
 
 	@Override
 	public void run() {
-		while (true) {
-			try {
-				chatClientInterface.processMessages();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
+		try (Socket socket = new Socket(host, port)) {
+			chatInterface = new ChatClientInterface(socket.getInputStream(), socket.getOutputStream());
+			chatInterface.setMessageHandler(messageHandler);
+
+			while (!interrupted()) {
+				chatInterface.readCommand();
 			}
+		} catch (IOException e) {
+			System.err.println("Error in ChatClient: " + e.getMessage());
+
 		}
 	}
 
 	public void sendMessage(String message) {
-		try {
-			chatClientInterface.sendMessage(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		executorService.submit(() -> {
+			try {
+				chatInterface.sendMessage(message);
+			} catch (IOException e) {
+				System.err.println("Error in ChatClient: " + e.getMessage());
+			}
+		});
 	}
-
 }
