@@ -1,4 +1,4 @@
-package Socket;
+package Server;
 
 import java.io.*;
 import java.net.*;
@@ -36,7 +36,7 @@ public class ChatServer {
 		return chatLog;
 	}
 
-	public class ClientHandler extends Thread {
+	public static class ClientHandler extends Thread {
 		private Socket socket;
 		private ChatServer server;
 		private PrintWriter out;
