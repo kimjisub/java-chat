@@ -82,9 +82,7 @@ public class ChatServer {
 
 		public void run() {
 			try {
-				while (!socket.isClosed()) {
-					chatServerInterface.readCommand(); // 클라이언트로부터 명령을 읽고 처리
-				}
+				while (chatServerInterface.readCommand()) ;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
@@ -94,6 +92,7 @@ public class ChatServer {
 
 		private void closeConnection() {
 			try {
+				System.out.println("Client " + userId + " disconnected.");
 				socket.close();
 			} catch (IOException e) {
 				e.printStackTrace();

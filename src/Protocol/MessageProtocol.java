@@ -12,7 +12,7 @@ import java.util.List;
  * 직접 정의한 메시지 프로토콜 클래스입니다.
  * 0x17: 요청 구분자
  * 0x1E: 요청 내 항목 구분자
- *
+ * <p>
  * 이를 통해서 메시지의 의미를 구분할 수 있습니다.
  */
 public class MessageProtocol {
@@ -39,6 +39,8 @@ public class MessageProtocol {
 				currentMessage.append((char) byteRead);
 			}
 		}
+
+		if(byteRead == -1) throw new IOException("Connection closed");
 
 		if (!currentMessage.isEmpty()) {
 			messages.add(currentMessage.toString());

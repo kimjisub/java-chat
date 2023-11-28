@@ -26,7 +26,7 @@ public class ChatServerInterface extends MessageProtocol {
 		this.clientHandler = handler;
 	}
 
-	public void readCommand() throws IOException {
+	public boolean readCommand() throws IOException {
 		try {
 			String[] commands = super.read();
 			if (commands.length > 0 && clientHandler != null) {
@@ -54,8 +54,9 @@ public class ChatServerInterface extends MessageProtocol {
 				}
 			}
 		} catch (Exception e) {
-			// Handle the exception appropriately
+			return false;
 		}
+		return true;
 	}
 
 	public void sendMessageToClient(int messageId, int userId, String message) throws IOException {

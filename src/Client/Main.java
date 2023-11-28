@@ -3,20 +3,24 @@ package Client;
 import Protocol.ChatClientInterface;
 
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.text.NumberFormat;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Main extends JFrame {
 
 	private static ChatClient client;
 	private static JFrame connectFrame;
 	private static JFrame chatFrame;
-	private static JTextArea chatArea;
+	private static JTextPane chatArea;
+	private static JScrollPane chatScrollPane;
+	private static StyledDocument doc;
+	private static SimpleAttributeSet leftAlign;
+	private static SimpleAttributeSet rightAlign;
 
 	public static void createConnectFrame() {
 		connectFrame = new JFrame("채팅 프로그램 - 접속");
@@ -43,34 +47,46 @@ public class Main extends JFrame {
 				int port = Integer.parseInt(portField.getText());
 				String name = nameField.getText();
 
-				ChatClientInterface.MessageHandler messageHandler = new ChatClientInterface.MessageHandler() {
-					@Override
-					public void onMessageNew(int messageId, int userId, String message) {
-						chatArea.append(userId + ": " + message + "\n");
-					}
+				client = new ChatClient(host, port,
+						new ChatClientInterface.MessageHandler() {
+							@Override
+							public void onMessageNew(int messageId, int userId, String message) {
+								try {
+									doc.insertString(doc.getLength(), message + "\n", leftAlign);
+								} catch (BadLocationException e) {
+									e.printStackTrace();
+								}
+							}
 
-					@Override
-					public void onMessageEdit(int messageId, String newMessage) {
-						// 메시지 수정 처리
-					}
+							@Override
+							public void onMessageEdit(int messageId, String newMessage) {
+								try {
+									doc.insertString(doc.getLength(), newMessage + "\n", leftAlign);
+								} catch (BadLocationException e) {
+									e.printStackTrace();
+								}
+							}
 
-					@Override
-					public void onMessageDelete(int messageId) {
-						// 메시지 삭제 처리
-					}
+							@Override
+							public void onMessageDelete(int messageId) {
+								try {
+									doc.insertString(doc.getLength(), "[메시지 삭제됨]\n", leftAlign);
+								} catch (BadLocationException e) {
+									e.printStackTrace();
+								}
+							}
 
-					@Override
-					public void onUnknown(String[] messages) {
-						// 알 수 없는 메시지 처리
-					}
+							@Override
+							public void onUnknown(String[] messages) {
+								JOptionPane.showMessageDialog(connectFrame, "Unknown command: " + String.join(" ", messages));
+							}
 
-					@Override
-					public void onProtocolError() {
-						// 프로토콜 오류 처리
-					}
-				};
-
-				client = new ChatClient(host, port, messageHandler);
+							@Override
+							public void onProtocolError() {
+								JOptionPane.showMessageDialog(connectFrame, "Protocol error");
+							}
+						}
+				);
 				client.start();
 				createChatFrame(name);
 				connectFrame.setVisible(false);
@@ -89,10 +105,16 @@ public class Main extends JFrame {
 		chatFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		chatFrame.setLayout(new BorderLayout());
 
-		chatArea = new JTextArea();
+		chatArea = new JTextPane();
 		chatArea.setEditable(false);
-		JScrollPane scrollPane = new JScrollPane(chatArea);
-		chatFrame.add(scrollPane, BorderLayout.CENTER);
+		doc = chatArea.getStyledDocument();
+		leftAlign = new SimpleAttributeSet();
+		StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
+		rightAlign = new SimpleAttributeSet();
+		StyleConstants.setAlignment(rightAlign, StyleConstants.ALIGN_RIGHT);
+
+		chatScrollPane = new JScrollPane(chatArea);
+		chatFrame.add(chatScrollPane, BorderLayout.CENTER);
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BorderLayout());
@@ -102,15 +124,25 @@ public class Main extends JFrame {
 		bottomPanel.add(sendButton, BorderLayout.EAST);
 		chatFrame.add(bottomPanel, BorderLayout.SOUTH);
 
-		sendButton.addActionListener(e -> {
-			String message = messageField.getText();
-			if (!message.isEmpty() && client != null) {
-				client.sendMessage(message);
-				messageField.setText("");
+		sendButton.addActionListener(e -> sendMessage(messageField));
+		messageField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendMessage(messageField);
+				}
 			}
 		});
 
 		chatFrame.setSize(500, 400);
+	}
+
+	private static void sendMessage(JTextField messageField) {
+		String message = messageField.getText();
+		if (!message.isEmpty() && client != null) {
+			client.sendMessage(message);
+			messageField.setText("");
+		}
 	}
 
 	public static void main(String[] args) {
