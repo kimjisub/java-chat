@@ -13,6 +13,7 @@ public class Main {
 			int port = Integer.parseInt(reader.readLine());
 			ChatServer server = new ChatServer(port);
 			server.start();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
