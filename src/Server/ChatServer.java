@@ -30,12 +30,12 @@ public class ChatServer {
 		}
 	}
 
-	public synchronized void broadcastMessage(String message) {
+	public synchronized void broadcastMessage(String message, int userId) {
 		chatLog.add(message);
 
 		System.out.println(message);
 		for (ClientHandler client : clients) {
-			client.sendMessage(message);
+			client.sendMessage(message, userId);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class ChatServer {
 			chatServerInterface.setClientHandler(new ChatServerInterface.ClientHandler() {
 				@Override
 				public void onMessageReceived(String message) {
-					server.broadcastMessage(message); // 메시지를 모든 클라이언트에게 전송
+					server.broadcastMessage(message, userId); // 메시지를 모든 클라이언트에게 전송
 				}
 
 				@Override
@@ -100,7 +100,7 @@ public class ChatServer {
 			}
 		}
 
-		public void sendMessage(String message) {
+		public void sendMessage(String message, int userId) {
 			try {
 				chatServerInterface.sendMessageToClient(server.getChatLog().size() - 1, userId, message);
 			} catch (IOException e) {
