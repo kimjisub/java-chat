@@ -13,7 +13,8 @@ import java.awt.event.KeyEvent;
 import javax.swing.border.LineBorder;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class Main extends JFrame {
 
@@ -128,6 +129,22 @@ public class Main extends JFrame {
 		connectButton.setFont(new Font("Serif", Font.BOLD, 14)); // Serif 폰트, 굵은 스타일, 16pt 크기
 		connectButton.setForeground(Color.black); // 텍스트 색상 변경
 		connectButton.setBorder(new LineBorder(Color.lightGray, 2)); // 경계 스타일 변경
+
+		connectButton.setEnabled(false);
+		nameField.getDocument().addDocumentListener(new DocumentListener(){
+			public void changedUpdate(DocumentEvent e) {
+				updateButton();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				updateButton();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				updateButton();
+			}
+			private void updateButton() {
+				connectButton.setEnabled(!nameField.getText().trim().isEmpty());
+			}
+		});
 
 		connectButton.addActionListener(e -> {
 			try {
