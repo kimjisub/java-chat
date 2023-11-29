@@ -10,6 +10,9 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import javax.swing.border.LineBorder;
+import java.awt.GraphicsEnvironment;
+
 
 public class Main extends JFrame {
 
@@ -25,21 +28,67 @@ public class Main extends JFrame {
 	public static void createConnectFrame() {
 		connectFrame = new JFrame("채팅 프로그램 - 접속");
 		connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		connectFrame.setLayout(new FlowLayout());
+		connectFrame.setLayout(null);
+
+		JLabel greeting = new JLabel("로그인 화면");
+		greeting.setLocation(180,5);
+		greeting.setSize(300,60);
+		greeting.setFont(new Font(greeting.getFont().getName(), Font.BOLD, 40));
+		connectFrame.add(greeting);
 
 		JTextField hostField = new JTextField(20);
-		JTextField portField = new JTextField(5);
-		JTextField nameField = new JTextField(20);
+		hostField.setLocation(60,75);
+		hostField.setSize(270,25);
+		//hostField.setFont(new Font("Serif", Font.BOLD, 16));
+		hostField.setBorder(new LineBorder(Color.GRAY, 3));
+		hostField.setHorizontalAlignment(JTextField.CENTER);
+		hostField.setToolTipText("주소를 입력하세요.");
 
-		connectFrame.add(new JLabel("Host: "));
+
+		JTextField portField = new JTextField(5);
+		portField.setLocation(380,75);
+		portField.setSize(180,25);
+		portField.setBorder(new LineBorder(Color.GRAY, 3));
+		portField.setHorizontalAlignment(JTextField.CENTER);
+		portField.setToolTipText("포트번호를 입력하세요.");
+
+		JTextField nameField = new JTextField(20);
+		nameField.setLocation(60,110);
+		nameField.setSize(150,30);
+		nameField.setBorder(new LineBorder(Color.GRAY, 3));
+		nameField.setHorizontalAlignment(JTextField.CENTER);
+		nameField.setToolTipText("이름을 입력하세요.");
+
+		JLabel hos = new JLabel("Host : ");
+		connectFrame.add(hos);
+		hos.setLocation(15,70);
+		hos.setSize(50,30);
+		hos.setFont(new Font("Serif", Font.BOLD, 16));
+
+		JLabel por = new JLabel("Port : ");
+		connectFrame.add(por);
+		por.setLocation(340,70);
+		por.setSize(50,30);
+		por.setFont(new Font("Serif", Font.BOLD, 16));
+
+		JLabel nam = new JLabel("Name : ");
+		connectFrame.add(nam);
+		nam.setLocation(8,105);
+		nam.setSize(60,40);
+		nam.setFont(new Font("Serif", Font.BOLD, 16));
+
+
 		connectFrame.add(hostField);
-		connectFrame.add(new JLabel("Port: "));
 		connectFrame.add(portField);
-		connectFrame.add(new JLabel("Name: "));
 		connectFrame.add(nameField);
 
 		JButton connectButton = new JButton("접속");
 		connectFrame.add(connectButton);
+		connectButton.setLocation(380,110);
+		connectButton.setSize(70,40);
+		connectButton.setFont(new Font("Serif", Font.BOLD, 14)); // Serif 폰트, 굵은 스타일, 16pt 크기
+		connectButton.setForeground(Color.black); // 텍스트 색상 변경
+		connectButton.setBorder(new LineBorder(Color.lightGray, 2)); // 경계 스타일 변경
 
 		connectButton.addActionListener(e -> {
 			try {
@@ -96,8 +145,11 @@ public class Main extends JFrame {
 			}
 		});
 
-		connectFrame.setSize(300, 200);
+		connectFrame.setSize(600, 220);
+		Color lightGreen = new Color(210, 255, 210);
+		connectFrame.getContentPane().setBackground(lightGreen);
 		connectFrame.setVisible(true);
+		connectFrame.setLocationRelativeTo(null);
 	}
 
 	public static void createChatFrame(String userName) {
