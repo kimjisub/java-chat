@@ -1,4 +1,6 @@
-# java chat
+# java-chat
+
+
 
 ## 주제 선정
 
@@ -31,3 +33,49 @@ TCP/IP 위에서 동작하기 때문에 ASCII 표준에 따라 목적에 따라 
 2. 서버와 클라이언트가 각각 송수신할 수 있는 인터페이스 정의
 3. 쓰레드 및 소켓을 처리하는 ChatClient, ChatServer 클래스 정의
 4. GUI를 처리하는 Main 클래스 정의
+
+
+커스텀 프로토콜
+메시지 송수신 프로토콜 기반 클라이언트 서버 인터페이스 만듦
+이걸 한번 더 이용해서 스레드 이용해서 클라이언트
+사용해서 gui에서 사용
+
+콜백함수
+
+
+## KeyWord
+
+<hr>
+
+- [funciton]()
+    - Callback 함수
+
+- [접근지정자]()
+- [클래스]()
+    - 캡슐화
+    - 상속
+    - 다형성
+    - 업캐스트
+    - 오버라이딩
+    - 동적바인딩
+-  [모듈 (JavaBase module)]()
+    - net
+    - util
+    - io
+        - BufferedReader
+        - IOException
+        - InputStreamReader
+- [컬렉션]()
+    - ArrayList\<E>
+
+- [GUI]()
+    - 라이브러리
+        - AWT (Abstract Windowing Toolkit)
+        - Swing package
+- [스레드&멀티태스킹]()
+    - 멀티스레딩
+    - 스레드 동기화
+- [Network]()
+    - TCP / IP
+    - 포트
+    - Socket programming
