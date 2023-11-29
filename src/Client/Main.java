@@ -11,7 +11,8 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.border.LineBorder;
-import java.awt.GraphicsEnvironment;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 
 public class Main extends JFrame {
@@ -41,7 +42,22 @@ public class Main extends JFrame {
 		greeting.setFont(new Font(greeting.getFont().getName(), Font.BOLD, 40));
 		connectFrame.add(greeting);
 
-		JTextField hostField = new JTextField(20);
+		JTextField hostField = new JTextField("localhost",20);
+		hostField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (hostField.getText().equals("localhost")) {
+					hostField.setText("");
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (hostField.getText().isEmpty()) {
+					hostField.setText("localhost");
+				}
+			}
+		});
 		hostField.setLocation(60,75);
 		hostField.setSize(270,25);
 		//hostField.setFont(new Font("Serif", Font.BOLD, 16));
@@ -50,10 +66,26 @@ public class Main extends JFrame {
 		hostField.setToolTipText("주소를 입력하세요.");
 
 
-		JTextField portField = new JTextField(5);
+		JTextField portField = new JTextField("8080",20);
+		portField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (portField.getText().equals("8080")) {
+					portField.setText("");
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (portField.getText().isEmpty()) {
+					portField.setText("8080");
+				}
+			}
+		});
 		portField.setLocation(380,75);
 		portField.setSize(180,25);
 		portField.setBorder(new LineBorder(Color.GRAY, 3));
+		//portField.setFont(new Font("Serif", Font.BOLD, 16));
 		portField.setHorizontalAlignment(JTextField.CENTER);
 		portField.setToolTipText("포트번호를 입력하세요.");
 
@@ -61,6 +93,7 @@ public class Main extends JFrame {
 		nameField.setLocation(60,110);
 		nameField.setSize(150,30);
 		nameField.setBorder(new LineBorder(Color.GRAY, 3));
+		//nameField.setFont(new Font("Serif", Font.BOLD, 16));
 		nameField.setHorizontalAlignment(JTextField.CENTER);
 		nameField.setToolTipText("이름을 입력하세요.");
 
@@ -87,6 +120,7 @@ public class Main extends JFrame {
 		connectFrame.add(portField);
 		connectFrame.add(nameField);
 
+
 		JButton connectButton = new JButton("접속");
 		connectFrame.add(connectButton);
 		connectButton.setLocation(380,110);
@@ -98,8 +132,20 @@ public class Main extends JFrame {
 		connectButton.addActionListener(e -> {
 			try {
 				String host = hostField.getText();
-				int port = Integer.parseInt(portField.getText());
+				int port;
+				String portText = portField.getText().trim();
 				String name = nameField.getText();
+
+				if (portText.isEmpty()) {
+					port = 8080;
+				} else {
+					// 포트 필드에 값이 있으면 정수로 변환
+					port = Integer.parseInt(portText);
+				}
+
+				if (host.isEmpty()) {
+					host = "localhost";
+				}
 
 				client = new ChatClient(host, port,
 						new ChatClientInterface.MessageHandler() {
