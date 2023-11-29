@@ -6,14 +6,16 @@ import java.io.InputStreamReader;
 
 public class Main {
 	public static void main(String[] args) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+		// 포트 번호를 가져오는 코드를 수정합니다. null 값을 처리할 수 있도록 합니다.
+		int port = 8080;
+		try {
+			port = args.length > 0 ? Integer.parseInt(args[0]) : Integer.parseInt(System.getenv("PORT"));
+		} catch (NumberFormatException | NullPointerException e) {
+		}
 
-			// 서버 모드
-			System.out.print("Enter port number for the server: ");
-			int port = Integer.parseInt(reader.readLine());
+		try {
 			ChatServer server = new ChatServer(port);
 			server.start();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
