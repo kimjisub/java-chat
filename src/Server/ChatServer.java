@@ -19,6 +19,7 @@ public class ChatServer {
 		clients = new ArrayList<>();
 		chatLog = new ArrayList<>();
 		serverSocket = new ServerSocket(port);
+		System.out.println("Server is now open on port " + port); // 서버가 열린 포트 번호를 로그로 찍는 코드 추가
 	}
 
 	public void start() throws IOException {
@@ -94,6 +95,7 @@ public class ChatServer {
 			try {
 				System.out.println("Client " + userId + " disconnected.");
 				socket.close();
+				server.clients.remove(this);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
