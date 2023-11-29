@@ -26,6 +26,11 @@ public class Main extends JFrame {
 	private static SimpleAttributeSet rightAlign;
 
 	public static void createConnectFrame() {
+
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		}  catch (Exception e) { }
+
 		connectFrame = new JFrame("채팅 프로그램 - 접속");
 		connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		connectFrame.setLayout(null);
@@ -146,8 +151,8 @@ public class Main extends JFrame {
 		});
 
 		connectFrame.setSize(600, 220);
-		Color lightGreen = new Color(210, 255, 210);
-		connectFrame.getContentPane().setBackground(lightGreen);
+		//Color lightGreen = new Color(210, 255, 210);
+		//connectFrame.getContentPane().setBackground(lightGreen);
 		connectFrame.setVisible(true);
 		connectFrame.setLocationRelativeTo(null);
 	}
@@ -197,7 +202,5 @@ public class Main extends JFrame {
 		}
 	}
 
-	public static void main(String[] args) {
-		createConnectFrame();
-	}
+	public static void main(String[] args) {createConnectFrame();}
 }
