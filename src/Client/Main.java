@@ -44,99 +44,56 @@ public class Main extends JFrame {
 
 		connectFrame = new JFrame("채팅 프로그램 - 접속");
 		connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		connectFrame.setLayout(null);
+		connectFrame.setLayout(new BoxLayout(connectFrame.getContentPane(), BoxLayout.Y_AXIS));
+		connectFrame.getContentPane().setBackground(new Color(0x1d2127));
 
 		JLabel greeting = new JLabel("로그인 화면");
-		greeting.setLocation(180,5);
-		greeting.setSize(300,60);
+		greeting.setAlignmentX(Component.CENTER_ALIGNMENT);
+		greeting.setForeground(new Color(0xFFFFFF));
 		greeting.setFont(new Font(greeting.getFont().getName(), Font.BOLD, 40));
 		connectFrame.add(greeting);
 
 		JTextField hostField = new JTextField("localhost",20);
-		hostField.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				if (hostField.getText().equals("localhost")) {
-					hostField.setText("");
-				}
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (hostField.getText().isEmpty()) {
-					hostField.setText("localhost");
-				}
-			}
-		});
-		hostField.setLocation(60,75);
-		hostField.setSize(270,25);
-		hostField.setBorder(new LineBorder(new Color(0x45aaf2), 1));
-		hostField.setHorizontalAlignment(JTextField.CENTER);
+		hostField.setMaximumSize(new Dimension(Integer.MAX_VALUE, hostField.getPreferredSize().height));
+		hostField.setBorder(BorderFactory.createEmptyBorder());
+		hostField.setBackground(new Color(0x1d2127));
+		hostField.setForeground(new Color(0xFFFFFF));
+		hostField.setCaretColor(new Color(0xFFFFFF));
 		hostField.setToolTipText("주소를 입력하세요.");
 
-
 		JTextField portField = new JTextField("8080",20);
-		portField.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				if (portField.getText().equals("8080")) {
-					portField.setText("");
-				}
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (portField.getText().isEmpty()) {
-					portField.setText("8080");
-				}
-			}
-		});
-		portField.setLocation(380,75);
-		portField.setSize(180,25);
-		portField.setBorder(new LineBorder(new Color(0x45aaf2), 1));
-		portField.setHorizontalAlignment(JTextField.CENTER);
+		portField.setMaximumSize(new Dimension(Integer.MAX_VALUE, portField.getPreferredSize().height));
+		portField.setBorder(BorderFactory.createEmptyBorder());
+		portField.setBackground(new Color(0x1d2127));
+		portField.setForeground(new Color(0xFFFFFF));
+		portField.setCaretColor(new Color(0xFFFFFF));
 		portField.setToolTipText("포트번호를 입력하세요.");
 
 		JTextField nameField = new JTextField(20);
-		nameField.setLocation(60,110);
-		nameField.setSize(150,30);
-		nameField.setBorder(new LineBorder(new Color(0x45aaf2), 1));
-		nameField.setHorizontalAlignment(JTextField.CENTER);
+		nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, nameField.getPreferredSize().height));
+		nameField.setBorder(BorderFactory.createEmptyBorder());
+		nameField.setBackground(new Color(0x1d2127));
+		nameField.setForeground(new Color(0xFFFFFF));
+		nameField.setCaretColor(new Color(0xFFFFFF));
 		nameField.setToolTipText("이름을 입력하세요.");
 
-		JLabel hos = new JLabel("Host : ");
-		connectFrame.add(hos);
-		hos.setLocation(15,70);
-		hos.setSize(50,30);
-		hos.setFont(new Font("Dialog", Font.BOLD, 16));
-
-		JLabel por = new JLabel("Port : ");
-		connectFrame.add(por);
-		por.setLocation(340,70);
-		por.setSize(50,30);
-		por.setFont(new Font("Dialog", Font.BOLD, 16));
-
-		JLabel nam = new JLabel("Name : ");
-		connectFrame.add(nam);
-		nam.setLocation(8,105);
-		nam.setSize(60,40);
-		nam.setFont(new Font("Dialog", Font.BOLD, 16));
-
-
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
 		connectFrame.add(hostField);
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
 		connectFrame.add(portField);
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
 		connectFrame.add(nameField);
-
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
 
 		JButton connectButton = new JButton("접속");
-		connectFrame.add(connectButton);
-		connectButton.setLocation(380,110);
-		connectButton.setSize(70,40);
+		connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		connectButton.setFont(new Font("Serif", Font.BOLD, 14));
-		connectButton.setForeground(new Color(0x45aaf2));
-		connectButton.setBorder(new LineBorder(new Color(0xd1d8e0), 1));
-
+		connectButton.setForeground(new Color(0xFFFFFF));
+		connectButton.setBackground(new Color(0x45aaf2));
+		connectButton.setBorder(BorderFactory.createEmptyBorder());
+		connectButton.setFocusPainted(false);
 		connectButton.setEnabled(false);
+
 		nameField.getDocument().addDocumentListener(new DocumentListener(){
 			public void changedUpdate(DocumentEvent e) {
 				updateButton();
@@ -151,6 +108,8 @@ public class Main extends JFrame {
 				connectButton.setEnabled(!nameField.getText().trim().isEmpty());
 			}
 		});
+
+		connectFrame.add(connectButton);
 
 		connectButton.addActionListener(e -> {
 			try {
@@ -218,10 +177,9 @@ public class Main extends JFrame {
 			}
 		});
 
-		connectFrame.setSize(600, 220);
-		connectFrame.getContentPane().setBackground(new Color(0xdfe6e9));
-		connectFrame.setVisible(true);
+		connectFrame.setSize(300, 400);
 		connectFrame.setLocationRelativeTo(null);
+		connectFrame.setVisible(true);
 	}
 
 	public static void createChatFrame(String userName) {
