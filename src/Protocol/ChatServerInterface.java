@@ -7,6 +7,8 @@ import java.io.OutputStream;
 public class ChatServerInterface extends MessageProtocol {
 
 	public interface ClientHandler {
+		void onNameSet(String name);
+
 		void onMessageReceived(String message);
 
 		void onMessageEditRequest(int messageId, String newMessage);
@@ -31,6 +33,12 @@ public class ChatServerInterface extends MessageProtocol {
 			String[] commands = super.read();
 			if (commands.length > 0 && clientHandler != null) {
 				switch (commands[0]) {
+					case "name.set" -> {
+						if (commands.length >= 2) {
+							String name = commands[1];
+							clientHandler.onNameSet(name);
+						}
+					}
 					case "message.new" -> {
 						if (commands.length >= 2) {
 							String message = commands[1];

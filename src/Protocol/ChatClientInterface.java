@@ -68,6 +68,10 @@ public class ChatClientInterface extends MessageProtocol {
 		return true;
 	}
 
+	public void setName(String message) throws IOException {
+		super.send(new String[]{"name.set", message});
+	}
+
 	public void sendMessage(String message) throws IOException {
 		super.send(new String[]{"message.new", message});
 	}

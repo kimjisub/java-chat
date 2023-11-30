@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatServer {
 	private final ServerSocket serverSocket;
@@ -51,6 +53,8 @@ public class ChatServer {
 
 		private final ChatServerInterface chatServerInterface;
 
+		private static final Map<Integer, String> nameMap = new HashMap<>();
+
 		public ClientHandler(Socket socket, ChatServer server, int userId) throws IOException {
 			this.socket = socket;
 			this.server = server;
@@ -58,26 +62,30 @@ public class ChatServer {
 			this.chatServerInterface = new ChatServerInterface(socket.getInputStream(), socket.getOutputStream());
 			chatServerInterface.setClientHandler(new ChatServerInterface.ClientHandler() {
 				@Override
+				public void onNameSet(String name) {
+					nameMap.put(userId, name);
+				}
+
+				@Override
 				public void onMessageReceived(String message) {
-					server.broadcastMessage(message, userId); // 메시지를 모든 클라이언트에게 전송
+					String userName = nameMap.getOrDefault(userId, "Unknown");
+					server.broadcastMessage(userName + ": " + message, userId); // 사용자 이름과 메시지를 모든 클라이언트에게 전송
 				}
 
 				@Override
 				public void onMessageEditRequest(int messageId, String newMessage) {
-
+					// 메시지 수정 요청 처리
 				}
 
 				@Override
 				public void onMessageDeleteRequest(int messageId) {
-
+					// 메시지 삭제 요청 처리
 				}
 
 				@Override
 				public void onInvalidRequest(String[] messages) {
-
+					// 잘못된 요청 처리
 				}
-
-				// 다른 이벤트 핸들러 구현 (메시지 수정, 삭제 등)
 			});
 		}
 

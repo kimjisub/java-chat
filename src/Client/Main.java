@@ -210,6 +210,7 @@ public class Main extends JFrame {
 				client.setClientHandler(new ChatClient.ClientHandler() {
 					@Override
 					public void onConnect() {
+						client.setMyName(name);
 						createChatFrame(name);
 						connectFrame.setVisible(false);
 						chatFrame.setVisible(true);

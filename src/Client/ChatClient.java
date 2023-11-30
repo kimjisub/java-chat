@@ -34,7 +34,6 @@ public class ChatClient extends Thread {
 	public ChatClient(String host, int port) {
 		this.host = host;
 		this.port = port;
-		this.messageHandler = messageHandler;
 	}
 
 
@@ -81,6 +80,16 @@ public class ChatClient extends Thread {
 		executorService.submit(() -> {
 			try {
 				chatInterface.sendMessage(message);
+			} catch (IOException e) {
+				System.err.println("Error in ChatClient: " + e.getMessage());
+			}
+		});
+	}
+
+	public void setMyName(String name) {
+		executorService.submit(() -> {
+			try {
+				chatInterface.setName(name);
 			} catch (IOException e) {
 				System.err.println("Error in ChatClient: " + e.getMessage());
 			}
