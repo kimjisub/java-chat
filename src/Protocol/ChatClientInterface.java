@@ -9,6 +9,7 @@ public class ChatClientInterface extends MessageProtocol {
 
 	// 모든 이벤트 타입에 대한 콜백 인터페이스를 묶어 정의
 	public interface MessageHandler {
+
 		void onMessageNew(int messageId, int userId, String message);
 
 		void onMessageEdit(int messageId, String newMessage);
@@ -31,7 +32,7 @@ public class ChatClientInterface extends MessageProtocol {
 		this.messageHandler = handler;
 	}
 
-	public void readCommand() throws IOException {
+	public boolean readCommand() throws IOException {
 		try {
 			String[] commands = super.read();
 			if (commands.length > 0 && messageHandler != null) {
@@ -62,7 +63,9 @@ public class ChatClientInterface extends MessageProtocol {
 			}
 		} catch (Exception e) {
 			messageHandler.onProtocolError();
+			return false;
 		}
+		return true;
 	}
 
 	public void sendMessage(String message) throws IOException {

@@ -3,6 +3,10 @@ package Client;
 import Protocol.ChatClientInterface;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -10,12 +14,7 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.border.LineBorder;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.io.UnsupportedEncodingException;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class Main extends JFrame {
 
@@ -39,71 +38,107 @@ public class Main extends JFrame {
 				}
 			}
 		} catch (Exception e) {
-			// Nimbus LookAndFeel을 설정하는데 실패하면 기본 시스템 LookAndFeel을 사용합니다.
+
 		}
 
-		connectFrame = new JFrame("채팅 프로그램 - 접속");
+		connectFrame = new JFrame("Java Chat - 접속");
 		connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		connectFrame.setLayout(new BoxLayout(connectFrame.getContentPane(), BoxLayout.Y_AXIS));
 		connectFrame.getContentPane().setBackground(new Color(0x1d2127));
+		((JComponent) connectFrame.getContentPane()).setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		JLabel greeting = new JLabel("로그인 화면");
+		JLabel greeting = new JLabel("Java Chat");
 		greeting.setAlignmentX(Component.CENTER_ALIGNMENT);
 		greeting.setForeground(new Color(0xFFFFFF));
-		greeting.setFont(new Font(greeting.getFont().getName(), Font.BOLD, 40));
+		greeting.setFont(new Font(greeting.getFont().getName(), Font.BOLD, 24));
 		connectFrame.add(greeting);
 
-		JTextField hostField = new JTextField("localhost",20);
-		hostField.setMaximumSize(new Dimension(Integer.MAX_VALUE, hostField.getPreferredSize().height));
-		hostField.setBorder(BorderFactory.createEmptyBorder());
-		hostField.setBackground(new Color(0x1d2127));
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 20)));
+
+		JPanel serverPanel = new JPanel();
+		serverPanel.setLayout(new BoxLayout(serverPanel, BoxLayout.X_AXIS));
+		serverPanel.setBackground(new Color(0x1d2127));
+		serverPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+
+
+		JLabel serverLabel = new JLabel("서버 주소:");
+		serverLabel.setForeground(new Color(0xFFFFFF));
+		connectFrame.add(serverLabel);
+
+		JTextField hostField = new JTextField("localhost", 20);
+		hostField.setBorder(new LineBorder(new Color(0x555555), 1));
+		hostField.setBackground(new Color(0x333333));
 		hostField.setForeground(new Color(0xFFFFFF));
 		hostField.setCaretColor(new Color(0xFFFFFF));
-		hostField.setToolTipText("주소를 입력하세요.");
+		hostField.setToolTipText("호스트 주소를 입력하세요.");
+		serverPanel.add(hostField);
 
-		JTextField portField = new JTextField("8080",20);
-		portField.setMaximumSize(new Dimension(Integer.MAX_VALUE, portField.getPreferredSize().height));
-		portField.setBorder(BorderFactory.createEmptyBorder());
-		portField.setBackground(new Color(0x1d2127));
+		JLabel colonLabel = new JLabel(":");
+		colonLabel.setForeground(new Color(0xFFFFFF));
+		serverPanel.add(colonLabel);
+
+		JTextField portField = new JTextField("8080", 4);
+		portField.setBorder(new LineBorder(new Color(0x555555), 1));
+		portField.setBackground(new Color(0x333333));
 		portField.setForeground(new Color(0xFFFFFF));
 		portField.setCaretColor(new Color(0xFFFFFF));
 		portField.setToolTipText("포트번호를 입력하세요.");
+		portField.setInputVerifier(new InputVerifier() {
+			@Override
+			public boolean verify(JComponent input) {
+				String text = ((JTextField) input).getText();
+				try {
+					int port = Integer.parseInt(text);
+					return port > 0 && port <= 65535;
+				} catch (NumberFormatException e) {
+					return false;
+				}
+			}
+		});
+		serverPanel.add(portField);
+
+		connectFrame.add(serverPanel);
+
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		JLabel nameLabel = new JLabel("이름:");
+		nameLabel.setForeground(new Color(0xFFFFFF));
+		connectFrame.add(nameLabel);
 
 		JTextField nameField = new JTextField(20);
-		nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, nameField.getPreferredSize().height));
-		nameField.setBorder(BorderFactory.createEmptyBorder());
-		nameField.setBackground(new Color(0x1d2127));
+		nameField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
+		nameField.setBorder(new LineBorder(new Color(0x555555), 1));
+		nameField.setBackground(new Color(0x333333));
 		nameField.setForeground(new Color(0xFFFFFF));
 		nameField.setCaretColor(new Color(0xFFFFFF));
 		nameField.setToolTipText("이름을 입력하세요.");
-
-		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
-		connectFrame.add(hostField);
-		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
-		connectFrame.add(portField);
-		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
 		connectFrame.add(nameField);
-		connectFrame.add(Box.createRigidArea(new Dimension(0, 10)));
+
+		connectFrame.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		JButton connectButton = new JButton("접속");
 		connectButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		connectButton.setFont(new Font("Serif", Font.BOLD, 14));
+		connectButton.setFont(new Font("Dialog", Font.BOLD, 14));
 		connectButton.setForeground(new Color(0xFFFFFF));
 		connectButton.setBackground(new Color(0x45aaf2));
-		connectButton.setBorder(BorderFactory.createEmptyBorder());
+		connectButton.setBorder(new EmptyBorder(10, 0, 10, 0));
 		connectButton.setFocusPainted(false);
 		connectButton.setEnabled(false);
+		connectButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, connectButton.getPreferredSize().height + 20));
 
-		nameField.getDocument().addDocumentListener(new DocumentListener(){
+		nameField.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
 				updateButton();
 			}
+
 			public void removeUpdate(DocumentEvent e) {
 				updateButton();
 			}
+
 			public void insertUpdate(DocumentEvent e) {
 				updateButton();
 			}
+
 			private void updateButton() {
 				connectButton.setEnabled(!nameField.getText().trim().isEmpty());
 			}
@@ -128,8 +163,12 @@ public class Main extends JFrame {
 					host = "localhost";
 				}
 
-				client = new ChatClient(host, port,
+				client = new ChatClient(host, port);
+
+				client.setMessageHandler(
 						new ChatClientInterface.MessageHandler() {
+
+
 							@Override
 							public void onMessageNew(int messageId, int userId, String message) {
 								try {
@@ -166,18 +205,34 @@ public class Main extends JFrame {
 							public void onProtocolError() {
 								JOptionPane.showMessageDialog(connectFrame, "Protocol error");
 							}
-						}
-				);
+						});
+
+				client.setClientHandler(new ChatClient.ClientHandler() {
+					@Override
+					public void onConnect() {
+						createChatFrame(name);
+						connectFrame.setVisible(false);
+						chatFrame.setVisible(true);
+					}
+
+					@Override
+					public void onDisconnect() {
+						JOptionPane.showMessageDialog(connectFrame, "연결이 끊겼습니다.");
+					}
+
+					@Override
+					public void onError(Exception e) {
+						JOptionPane.showMessageDialog(connectFrame, "서버에 연결할 수 없습니다.");
+					}
+				});
 				client.start();
-				createChatFrame(name);
-				connectFrame.setVisible(false);
-				chatFrame.setVisible(true);
+
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(connectFrame, "Error: " + ex.getMessage());
 			}
 		});
 
-		connectFrame.setSize(300, 400);
+		connectFrame.setSize(400, 600);
 		connectFrame.setLocationRelativeTo(null);
 		connectFrame.setVisible(true);
 	}
@@ -216,7 +271,9 @@ public class Main extends JFrame {
 			}
 		});
 
-		chatFrame.setSize(500, 400);
+		chatFrame.setSize(400, 600);
+		chatFrame.setLocationRelativeTo(null);
+		chatFrame.setVisible(true);
 	}
 
 	private static void sendMessage(JTextField messageField) {
@@ -224,14 +281,17 @@ public class Main extends JFrame {
 		if (!message.isEmpty() && client != null) {
 			try {
 				byte[] messageBytes = message.getBytes("UTF-8");
-				client.sendMessage(new String(messageBytes, "UTF-8"));
+				// client.sendMessage(new String(messageBytes, "UTF-8"));
+				client.sendMessage(message);
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace(); // 적절한 예외 처리를 해야 합니다.
+				e.printStackTrace();
 			}
 			messageField.setText("");
 		}
 	}
 
-	public static void main(String[] args) {createConnectFrame();}
+	public static void main(String[] args) {
+		createConnectFrame();
+	}
 }
 

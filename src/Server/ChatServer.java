@@ -83,7 +83,7 @@ public class ChatServer {
 
 		public void run() {
 			try {
-				while (chatServerInterface.readCommand()) ;
+				while (!interrupted() && chatServerInterface.readCommand()) ;
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
