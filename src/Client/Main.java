@@ -172,7 +172,7 @@ public class Main extends JFrame {
 							@Override
 							public void onMessageNew(int messageId, int userId, String message) {
 								try {
-									doc.insertString(doc.getLength(), userId + ": " + message + "\n", leftAlign);
+									doc.insertString(doc.getLength(), message + "\n", leftAlign);
 								} catch (BadLocationException e) {
 									e.printStackTrace();
 								}

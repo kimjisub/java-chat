@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="theokanning.openai.gpt3.java.service" type="repository">
+    <properties maven-id="com.theokanning.openai-gpt3-java:service:0.14.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/theokanning/openai-gpt3-java/service/0.14.0/service-0.14.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/theokanning/openai-gpt3-java/client/0.14.0/client-0.14.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/theokanning/openai-gpt3-java/api/0.14.0/api-0.14.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.14.2/jackson-annotations-2.14.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/retrofit/2.9.0/retrofit-2.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okhttp3/okhttp/3.14.9/okhttp-3.14.9.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/okio/okio/1.17.2/okio-1.17.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/adapter-rxjava2/2.9.0/adapter-rxjava2-2.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/reactivex/rxjava2/rxjava/2.0.0/rxjava-2.0.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/reactivestreams/reactive-streams/1.0.3/reactive-streams-1.0.3.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/squareup/retrofit2/converter-jackson/2.9.0/converter-jackson-2.9.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.10.1/jackson-databind-2.10.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.10.1/jackson-core-2.10.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/kjetland/mbknor-jackson-jsonschema_2.12/1.0.34/mbknor-jackson-jsonschema_2.12-1.0.34.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.12.8/scala-library-2.12.8.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/javax/validation/validation-api/2.0.1.Final/validation-api-2.0.1.Final.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.26/slf4j-api-1.7.26.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/io/github/classgraph/classgraph/4.8.21/classgraph-4.8.21.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

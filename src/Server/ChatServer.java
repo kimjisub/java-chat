@@ -1,19 +1,27 @@
 package Server;
 
 import Protocol.ChatServerInterface;
+import com.theokanning.openai.completion.CompletionRequest;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
+import com.theokanning.openai.service.OpenAiService;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ChatServer {
 	private final ServerSocket serverSocket;
 	private final List<ClientHandler> clients;
 	private final List<String> chatLog;
+
+	private final OpenAiService openapi;
+
+	List<ChatMessage> messages = new ArrayList<>();
 
 	private int nextUserId = 0;
 
@@ -22,6 +30,23 @@ public class ChatServer {
 		chatLog = new ArrayList<>();
 		serverSocket = new ServerSocket(port);
 		System.out.println("Server is now open on port " + port); // 서버가 열린 포트 번호를 로그로 찍는 코드 추가
+
+		Properties prop = new Properties();
+		String openaiKey = "";
+		try (InputStream input = new FileInputStream("config.properties")) {
+			// .properties 파일 로드
+			prop.load(input);
+
+			// 키를 사용하여 값을 검색
+			openaiKey = prop.getProperty("OPENAI_KEY");
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		openapi = new OpenAiService(openaiKey);
+
+
+
 	}
 
 	public void start() throws IOException {
@@ -70,6 +95,26 @@ public class ChatServer {
 				public void onMessageReceived(String message) {
 					String userName = nameMap.getOrDefault(userId, "Unknown");
 					server.broadcastMessage(userName + ": " + message, userId); // 사용자 이름과 메시지를 모든 클라이언트에게 전송
+
+					try {
+						ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), message);
+						server.messages.add(userMessage);
+
+						ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
+								.builder()
+								.model("gpt-3.5-turbo-0613")
+								.messages(server.messages)
+//								.functionCall(new ChatCompletionRequest.ChatCompletionRequestFunctionCall("auto"))
+								.maxTokens(256)
+								.build();
+						ChatMessage responseMessage = server.openapi.createChatCompletion(chatCompletionRequest).getChoices().get(0).getMessage();
+
+						server.messages.add(responseMessage);
+
+						server.broadcastMessage("AI: " + responseMessage.getContent(), userId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 
 				@Override
