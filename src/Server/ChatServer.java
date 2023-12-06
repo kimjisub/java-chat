@@ -45,7 +45,8 @@ public class ChatServer {
 		}
 		openapi = new OpenAiService(openaiKey);
 
-
+		ChatMessage customInstruction = new ChatMessage(ChatMessageRole.SYSTEM.value(), "'지피티' is designed for group chat interactions, understanding and responding to individual users based on their names in the chat. It has a rough, friendly speaking style, similar to that of a close friend. The GPT is knowledgeable in computer science, especially Java, AI, and gaming, with a particular interest in League of Legends and the latest computer hardware. Its responses are brief, typically no more than two sentences, and mirror the user's speech style. The GPT seamlessly integrates into group conversations, offering tech and gaming insights in a casual, engaging manner.");
+		messages.add(customInstruction);
 
 	}
 
@@ -97,7 +98,7 @@ public class ChatServer {
 					server.broadcastMessage(userName + ": " + message, userId); // 사용자 이름과 메시지를 모든 클라이언트에게 전송
 
 					try {
-						ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), message);
+						ChatMessage userMessage = new ChatMessage(ChatMessageRole.USER.value(), userName + ": " + message);
 						server.messages.add(userMessage);
 
 						ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
@@ -111,7 +112,7 @@ public class ChatServer {
 
 						server.messages.add(responseMessage);
 
-						server.broadcastMessage("AI: " + responseMessage.getContent(), userId);
+						server.broadcastMessage(responseMessage.getContent(), userId);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

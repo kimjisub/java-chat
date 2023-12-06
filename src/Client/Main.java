@@ -148,20 +148,10 @@ public class Main extends JFrame {
 
 		connectButton.addActionListener(e -> {
 			try {
-				String host = hostField.getText();
-				int port;
+				String host = hostField.getText().isEmpty() ? "localhost" : hostField.getText();
 				String portText = portField.getText().trim();
+				int port = portText.isEmpty() ? 8080 : Integer.parseInt(portText);
 				String name = nameField.getText();
-
-				if (portText.isEmpty()) {
-					port = 8080;
-				} else {
-					port = Integer.parseInt(portText);
-				}
-
-				if (host.isEmpty()) {
-					host = "localhost";
-				}
 
 				client = new ChatClient(host, port);
 
@@ -172,7 +162,7 @@ public class Main extends JFrame {
 							@Override
 							public void onMessageNew(int messageId, int userId, String message) {
 								try {
-									doc.insertString(doc.getLength(), message + "\n", leftAlign);
+									doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
 								} catch (BadLocationException e) {
 									e.printStackTrace();
 								}
