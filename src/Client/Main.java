@@ -14,7 +14,12 @@ import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.awt.Color;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.text.html.HTMLDocument;
 
 public class Main extends JFrame {
 
@@ -26,6 +31,36 @@ public class Main extends JFrame {
 	private static StyledDocument doc;
 	private static SimpleAttributeSet leftAlign;
 	private static SimpleAttributeSet rightAlign;
+
+
+	private static boolean isUserMessageToggle = true;
+	private static void appendToPane(JTextPane tp, String message) {
+		tp.setContentType("text/html");
+		HTMLDocument doc = (HTMLDocument) tp.getDocument();
+		try {
+			String userStyle = "style='margin: 5px; border-radius: 5px;'";
+			String messageStyle;
+			if (isUserMessageToggle) {
+				// User messages in yellow, aligned to the right with a gray border and space below
+				messageStyle = "style='background-color: #FFFF00; padding: 7px; border: 2px solid #cccccc; display: block; text-align: left; clear: both; margin-bottom: 10px; max-width: 400px; overflow-wrap: break-word;'";
+			} else {
+				// OpenAI messages in white, aligned to the left with a gray border and space below
+				messageStyle = "style='background-color: #FFFFFF; padding: 7px; border: 2px solid #cccccc; display: block; text-align: left; clear: both; margin-bottom: 10px; max-width: 400px; overflow-wrap: break-word;'";
+			}
+
+			// Enclose each message in its own div with userStyle and messageStyle
+			String messageInHtml = String.format(
+					"<div %s> %s</div>", messageStyle,  message.replaceAll("\n", "<br>"));
+
+			// Append message to document
+			doc.insertAfterEnd(doc.getCharacterElement(doc.getLength()), messageInHtml);
+			isUserMessageToggle = !isUserMessageToggle;
+		} catch (BadLocationException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 	public static void createConnectFrame() {
 
@@ -157,15 +192,29 @@ public class Main extends JFrame {
 
 				client.setMessageHandler(
 						new ChatClientInterface.MessageHandler() {
-
-
 							@Override
 							public void onMessageNew(int messageId, int userId, String message) {
-								try {
+								SwingUtilities.invokeLater(() -> {
+									FontMetrics metrics = chatArea.getFontMetrics(chatArea.getFont());
+									StringBuilder wrappedText = new StringBuilder();
+									int currentWidth = 0;
+
+									for (String word : message.split(" ")) {
+										int wordWidth = metrics.stringWidth(word + " ");
+										if (currentWidth + wordWidth > 340) {
+											wrappedText.append("\n");
+											currentWidth = 0;
+										}
+										wrappedText.append(word).append(" ");
+										currentWidth += wordWidth;
+									}
+									appendToPane(chatArea,wrappedText.toString());
+								});
+								/*try {
 									doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
-								} catch (BadLocationException e) {
+								} catch (Exception e) {
 									e.printStackTrace();
-								}
+								}*/
 							}
 
 							@Override
