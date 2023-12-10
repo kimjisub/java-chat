@@ -11,6 +11,8 @@ public class ChatClient extends Thread {
 	private final String host;
 	private final int port;
 
+	private String name;
+
 	private ChatClientInterface chatInterface;
 	private ChatClientInterface.MessageHandler messageHandler;
 
@@ -87,6 +89,7 @@ public class ChatClient extends Thread {
 	}
 
 	public void setMyName(String name) {
+		this.name = name;
 		executorService.submit(() -> {
 			try {
 				chatInterface.setName(name);
@@ -94,5 +97,9 @@ public class ChatClient extends Thread {
 				System.err.println("Error in ChatClient: " + e.getMessage());
 			}
 		});
+	}
+
+	public String getMyName() {
+		return name;
 	}
 }

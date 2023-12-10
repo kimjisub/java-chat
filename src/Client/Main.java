@@ -28,19 +28,19 @@ public class Main extends JFrame {
 	private static JFrame chatFrame;
 	private static JTextPane chatArea;
 	private static JScrollPane chatScrollPane;
-	private static StyledDocument doc;
+//	private static StyledDocument doc;
+
+	private static HTMLDocument htmlDoc;
 	private static SimpleAttributeSet leftAlign;
 	private static SimpleAttributeSet rightAlign;
 
 
-	private static boolean isUserMessageToggle = true;
-	private static void appendToPane(JTextPane tp, String message) {
-		tp.setContentType("text/html");
-		HTMLDocument doc = (HTMLDocument) tp.getDocument();
+	private static void appendToPane(String name, String message) {
 		try {
 			String userStyle = "style='margin: 5px; border-radius: 5px;'";
 			String messageStyle;
-			if (isUserMessageToggle) {
+			boolean isMe = name.equals(client.getMyName()); // 사용자 메시지 토글 대신 이 로직 사용
+			if (isMe) {
 				// User messages in yellow, aligned to the right with a gray border and space below
 				messageStyle = "style='background-color: #FFFF00; padding: 7px; border: 2px solid #cccccc; display: block; text-align: left; clear: both; margin-bottom: 10px; max-width: 400px; overflow-wrap: break-word;'";
 			} else {
@@ -50,11 +50,10 @@ public class Main extends JFrame {
 
 			// Enclose each message in its own div with userStyle and messageStyle
 			String messageInHtml = String.format(
-					"<div %s> %s</div>", messageStyle,  message.replaceAll("\n", "<br>"));
+					"<div %s><b>%s:</b> %s</div>", messageStyle, name, message.replaceAll("\n", "<br>"));
 
 			// Append message to document
-			doc.insertAfterEnd(doc.getCharacterElement(doc.getLength()), messageInHtml);
-			isUserMessageToggle = !isUserMessageToggle;
+			htmlDoc.insertAfterEnd(htmlDoc.getCharacterElement(htmlDoc.getLength()), messageInHtml);
 		} catch (BadLocationException | IOException e) {
 			e.printStackTrace();
 		}
@@ -208,7 +207,10 @@ public class Main extends JFrame {
 										wrappedText.append(word).append(" ");
 										currentWidth += wordWidth;
 									}
-									appendToPane(chatArea,wrappedText.toString());
+									String[] splitMessage = wrappedText.toString().split(": ", 2);
+									String name = splitMessage[0];
+									String msg = splitMessage.length > 1 ? splitMessage[1] : "";
+									appendToPane(name, msg);
 								});
 								/*try {
 									doc.insertString(doc.getLength(), message + "\n\n", leftAlign);
@@ -219,20 +221,20 @@ public class Main extends JFrame {
 
 							@Override
 							public void onMessageEdit(int messageId, String newMessage) {
-								try {
-									doc.insertString(doc.getLength(), newMessage + "\n", leftAlign);
-								} catch (BadLocationException e) {
-									e.printStackTrace();
-								}
+//								try {
+//									doc.insertString(doc.getLength(), newMessage + "\n", leftAlign);
+//								} catch (BadLocationException e) {
+//									e.printStackTrace();
+//								}
 							}
 
 							@Override
 							public void onMessageDelete(int messageId) {
-								try {
-									doc.insertString(doc.getLength(), "[메시지 삭제됨]\n", leftAlign);
-								} catch (BadLocationException e) {
-									e.printStackTrace();
-								}
+//								try {
+//									doc.insertString(doc.getLength(), "[메시지 삭제됨]\n", leftAlign);
+//								} catch (BadLocationException e) {
+//									e.printStackTrace();
+//								}
 							}
 
 							@Override
@@ -284,7 +286,9 @@ public class Main extends JFrame {
 
 		chatArea = new JTextPane();
 		chatArea.setEditable(false);
-		doc = chatArea.getStyledDocument();
+		chatArea.setContentType("text/html");
+		htmlDoc = (HTMLDocument) chatArea.getDocument();
+//		doc = chatArea.getStyledDocument();
 		leftAlign = new SimpleAttributeSet();
 		StyleConstants.setAlignment(leftAlign, StyleConstants.ALIGN_LEFT);
 		rightAlign = new SimpleAttributeSet();
@@ -292,6 +296,8 @@ public class Main extends JFrame {
 
 		chatScrollPane = new JScrollPane(chatArea);
 		chatFrame.add(chatScrollPane, BorderLayout.CENTER);
+
+
 
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new BorderLayout());
